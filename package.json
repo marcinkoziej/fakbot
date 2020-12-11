@@ -1,0 +1,15 @@
+{
+  "name": "fakbot",
+  "version": "0.1.0",
+  "description": "Web crawler to download invoices from popular services",
+  "main": "index.js",
+  "dependencies": {
+    "typescript": "^4.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
