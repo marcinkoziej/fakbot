@@ -1,29 +1,25 @@
 
 const vo = require('vo')
 const log = require('debug')('fakbot')
-const {getBrowser, logDownload, downloadTo} = require('./kit')
+const {signIn, getBrowser, logDownload, downloadTo} = require('./kit')
 
-// Does not work. downloading sucks.
-// the site is super slow.
-// maybe the new one will be better??
-export function pgnig (creds) {
-  const br = getBrowser()
+export function pgnig (creds, settings = {}) {
+  const br = getBrowser(settings)
 
   function * workflow () {
-    yield br
-      .goto('https://ebok.pgnig.pl/')
+    yield signIn(br, 'https://ebok.pgnig.pl/', {
+      identificator: creds.username,
+      accessPin: creds.password
+    })
 
     yield br
-      .type('[name=identificator]', creds.username)
-      .type('[name=accessPin]', creds.password)
-      .click('[type=submit]')
       .wait('[href="/faktury"]')
       .click('[href="/faktury"]')
 
-    yield br
-      .on('download', (state, item) => {
-        log(`download:${state} ${JSON.stringify(item, null, 2)}`)
-      })
+    // yield br
+    //   .on('download', (state, item) => {
+    //     log(`download:${state} ${JSON.stringify(item, null, 2)}`)
+    //   })
 
     let numbers = []
     yield br
@@ -48,12 +44,11 @@ export function pgnig (creds) {
       }
     }).filter(x => x)
 
-    console.log(`numbers:`, numbers)
+    log(`Getting these invoice numbers:`, numbers)
 
     let yearmon = null
 
     for (const [n, idx] of numbers) {
-      console.log('invoice:', n, idx)
       yield br
         .click(`.table-invoices .table-row:nth-child(${idx+2}) .invoice-number u`)
         .wait(200)
@@ -66,14 +61,13 @@ export function pgnig (creds) {
           }
         })
         .then((dt) => {
-          console.log(dt)
           if (dt) {
             const [d, m, y] = dt.split(/-/)
             yearmon = `${y}-${m}`
           }
         })
 
-      console.log('yearmon=', yearmon)
+      log(`Invoice ${n} (row index ${idx}) is for ${yearmon}`)
 
       yield br
         .wait('[href^="/crm/get-invoice-pdf"]')

@@ -6,7 +6,17 @@ const vo = require('vo')
 const log = require('debug')('fakbot')
 
 
-export function getBrowser() {
+export function signIn(browser, url, fields) {
+  browser = browser.goto(url)
+
+  for (const [field, val] of Object.entries(fields)) {
+    browser = browser.type(`[name="${field}"]`, val)
+  }
+
+  return browser.click('[type=submit]')
+}
+
+export function getBrowser(_settings) {
   return Nightmare({
     width: 1400, height: 800,
     show: true,
