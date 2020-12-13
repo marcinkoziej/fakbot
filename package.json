@@ -1,8 +1,13 @@
 {
   "name": "fakbot",
-  "version": "0.1.0",
+  "version": "0.1.0-beta.0",
   "description": "Web crawler to download invoices from popular services",
   "main": "index.js",
+  "bin": "bin/fakbot",
+  "files": [
+    "build",
+    "bin"
+  ],
   "dependencies": {
     "debug": "^4.3.1",
     "moment": "^2.29.1",
