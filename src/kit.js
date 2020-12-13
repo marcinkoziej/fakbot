@@ -1,3 +1,5 @@
+import { settings } from 'cluster'
+
 const fs = require('fs')
 const Nightmare = require('nightmare')
 // require('nightmare-download-manager')(Nightmare)
@@ -6,8 +8,11 @@ const vo = require('vo')
 const log = require('debug')('fakbot')
 
 
-export function signIn(browser, url, fields) {
+export function signIn(browser, url, fields, clickConsent) {
   browser = browser.goto(url)
+
+  if (clickConsent)
+    browser = browser.click(clickConsent)
 
   for (const [field, val] of Object.entries(fields)) {
     browser = browser.type(`[name="${field}"]`, val)
@@ -16,8 +21,14 @@ export function signIn(browser, url, fields) {
   return browser.click('[type=submit]')
 }
 
-export function getBrowser(_settings) {
-  return Nightmare({
+export function waitClick(browser, href) {
+  return browser
+    .wait(`[href="${href}"]`)
+    .click(`[href="${href}"]`)
+}
+
+export function getBrowser(settings) {
+  let b = Nightmare(Object.assign({
     width: 1400, height: 800,
     show: true,
     pollInterval: 800,
@@ -26,8 +37,13 @@ export function getBrowser(_settings) {
     paths: {
       downloads: process.cwd()
     }
-  })
-  //.downloadManager()
+  }))
+
+  if (settings.useragent) {
+    b = b.useragent(settings.useragent)
+  }
+
+  return b
 }
 
 export function sleepFor (ms) {
@@ -59,4 +75,25 @@ export function downloadTo (yearmon, number) {
   }
   // make this dir
   return `${dir}/${fn}`
+}
+
+export function getTable(selector) {
+  function textNodesUnder(node){
+    var justSpace = /^\s*$/
+    var all = [];
+    for (node=node.firstChild;node;node=node.nextSibling){
+      if (node.nodeType==3) {
+        if (!justSpace.test(node.textContent))
+          all.push(node.textContent);
+      } else {
+        all = all.concat(textNodesUnder(node));
+      }
+    }
+    return all;
+  }
+
+  const t = document.querySelector(selector)
+  return Array.from(t.children)
+    .map((r) => Array.from(r.children)
+        .map(textNodesUnder))
 }

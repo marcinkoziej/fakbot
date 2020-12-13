@@ -1,7 +1,7 @@
 
 const vo = require('vo')
 const log = require('debug')('fakbot')
-const {signIn, getBrowser, logDownload, downloadTo} = require('./kit')
+const {signIn, getBrowser, waitClick, logDownload, downloadTo} = require('./kit')
 
 export function pgnig (creds, settings = {}) {
   const br = getBrowser(settings)
@@ -12,9 +12,7 @@ export function pgnig (creds, settings = {}) {
       accessPin: creds.password
     })
 
-    yield br
-      .wait('[href="/faktury"]')
-      .click('[href="/faktury"]')
+    yield waitClick(br, '/faktury')
 
     // yield br
     //   .on('download', (state, item) => {
