@@ -2,6 +2,7 @@ const {pgnig} = require('./pgnig')
 const {innogy} = require('./innogy')
 const {getBrowser} = require('./kit')
 const yargs = require('yargs')
+const debug = require('debug')
 
 function testDownload() {
   const br = getBrowser()
@@ -34,6 +35,24 @@ function credsEnv(site) {
 export function cli () {
   const argv = yargs
         .scriptName('fakbot')
+        .option('show', {
+          alias: 's',
+          type: 'boolean',
+          describe: 'Show the browser',
+          default: false
+        })
+        .option('verbose', {
+          alias: 'v',
+          type: 'boolean',
+          default: false,
+          describe: 'Print logs',
+          coerce: (v) => {
+            if (v) {
+              debug.enable('fakbot')
+            }
+            return true
+          }
+        })
         .option('username', {
           alias: 'u',
           type: 'string',

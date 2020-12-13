@@ -3,21 +3,18 @@ const vo = require('vo')
 const log = require('debug')('fakbot')
 const {signIn, getBrowser, waitClick, logDownload, downloadTo} = require('./kit')
 
-export function pgnig (creds, settings = {}) {
+export function pgnig (settings = {}) {
+  if (!settings.username || !settings.password) throw "Provide username and password"
   const br = getBrowser(settings)
 
   function * workflow () {
     yield signIn(br, 'https://ebok.pgnig.pl/', {
-      identificator: creds.username,
-      accessPin: creds.password
+      identificator: settings.username,
+      accessPin: settings.password
     })
 
     yield waitClick(br, '/faktury')
 
-    // yield br
-    //   .on('download', (state, item) => {
-    //     log(`download:${state} ${JSON.stringify(item, null, 2)}`)
-    //   })
 
     let numbers = []
     yield br
@@ -41,8 +38,6 @@ export function pgnig (creds, settings = {}) {
         return null
       }
     }).filter(x => x)
-
-    log(`Getting these invoice numbers:`, numbers)
 
     let yearmon = null
 
@@ -80,9 +75,5 @@ export function pgnig (creds, settings = {}) {
   return vo(workflow)
     .catch((error) => {
       console.log(error)
-    })
-    .then((data) => {
-      console.log('fin.')
-      console.log(data)
     })
 }

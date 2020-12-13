@@ -3,15 +3,16 @@ const vo = require('vo')
 const log = require('debug')('fakbot')
 const {getBrowser, signIn, waitClick, downloadTo, getTable} = require('./kit')
 
-export function innogy (creds, settings = {}) {
+export function innogy (settings = {}) {
+  if (!settings.username || !settings.password) throw "Provide username and password"
   const UA = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/78.0'
 
   const br = getBrowser(Object.assign({useragent: UA}, settings))
 
   function * workflow () {
     yield signIn(br, 'https://moje.innogy.pl/', {
-      "UserName": creds.username,
-      "Password": creds.password
+      "UserName": settings.username,
+      "Password": settings.password
     }, '#acceptCookies')
     yield waitClick(br, '/Faktury-i-platnosci')
 
@@ -26,7 +27,6 @@ export function innogy (creds, settings = {}) {
 
     let idx = 0
     for (const [info, amo, dt] of rows) {
-      console.log(info, amo, dt)
       idx += 1
       let yearmo = null
 
@@ -50,9 +50,5 @@ export function innogy (creds, settings = {}) {
   return vo(workflow)
     .catch((error) => {
       console.log(error)
-    })
-    .then((data) => {
-      console.log('fin.')
-      console.log(data)
     })
 }

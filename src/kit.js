@@ -30,13 +30,14 @@ export function waitClick(browser, href) {
 export function getBrowser(settings) {
   let b = Nightmare(Object.assign({
     width: 1400, height: 800,
-    show: true,
     pollInterval: 800,
     webPreferences: { images: true },
     waitTimeout: 120 * 1000,
     paths: {
       downloads: process.cwd()
     }
+  }, {
+    show: settings.show
   }))
 
   if (settings.useragent) {
