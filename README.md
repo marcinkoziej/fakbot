@@ -29,3 +29,15 @@ fakbot [options] [servicename]
 Supported service names are:
 - innogy
 - pgnig
+
+
+## Development
+
+To install deps and build:
+
+```
+yarn
+yarn build
+# or
+yarn watch
+```
