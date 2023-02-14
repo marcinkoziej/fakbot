@@ -32,7 +32,7 @@ export function pgnig (settings = {}) {
       })
 
     numbers = numbers.map((n, idx) => {
-      if (n.startsWith('VG')) {
+      if (n.startsWith('VG') || n.startsWith('VF')) {
         return [n, idx]
       } else {
         return null

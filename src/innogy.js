@@ -25,9 +25,13 @@ export function innogy (settings = {}) {
         rows = data
       })
 
+
     let idx = 0
-    for (const [info, amo, dt] of rows) {
+    for (const row  of rows) {
       idx += 1
+      if (row.length < 3) continue
+      const [info, amo, dt] = row
+      console.log(info, amo, dt)
       let yearmo = null
 
       const [title, num] = info
